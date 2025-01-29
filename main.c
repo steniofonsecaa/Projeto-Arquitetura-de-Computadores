@@ -3,18 +3,20 @@
 #include <stdlib.h>
 
 int R[4]; // Registradores R0, R1, R2, R3
-int memoria[256]; // Mem�ria com 256 posi��es
+int memoria[256]; // Memória com 256 posições
+#define TAM_BINARIO 32
 
-// Exibe os valores dos registradores
-void estado_registradores() {
-    printf("Estado atual dos registradores:\n");
-    for (int i = 0; i < 4; i++) {
-        printf("R%d: %d\n", i, R[i]);
+// Converte um número inteiro para uma string binária
+void int_para_binario(int numero, char *binario) {
+    for (int i = 0; i < TAM_BINARIO; i++) {
+        int mascara = 1 << (TAM_BINARIO - 1 - i);  // Cria a máscara de bit
+        int bit = (numero & mascara) != 0;  // Verifica se o bit está ligado
+        binario[i] = bit ? '1' : '0';  // Converte para caractere correspondente
     }
-    printf("\n");
+    binario[TAM_BINARIO] = '\0';
 }
 
-// Exibe os valores de uma faixa de mem�ria
+// Exibe os valores de uma faixa de memória
 void estado_memoria(int inicio, int fim) {
     printf("Estado atual da memoria (de %d a %d):\n", inicio, fim);
     for (int i = inicio; i <= fim && i < 256; i++) {
@@ -23,12 +25,12 @@ void estado_memoria(int inicio, int fim) {
     printf("\n");
 }
 
-// Processa uma instru��o
+// Processa uma instrução
 void executa_instrucao(char *instrucao) {
     char operacao[5];
     int reg_dest, reg_fonte1, reg_fonte2, endereco;
 
-    // Decodifica��o da instru��o
+    // Decodificação da instrução
     if (sscanf(instrucao, "%s R%d, R%d, R%d", operacao, &reg_dest, &reg_fonte1, &reg_fonte2) == 4) {
         if (strcmp(operacao, "SUB") == 0) {
             if (reg_dest >= 0 && reg_dest < 4 && reg_fonte1 >= 0 && reg_fonte1 < 4 && reg_fonte2 >= 0 && reg_fonte2 < 4) {
@@ -59,7 +61,7 @@ void executa_instrucao(char *instrucao) {
         printf("Erro ao decodificar a instrucao: %s\n", instrucao);
     }
 
-    // Mostra os valores dos registradores ap�s cada instru��o
+    // Mostra os valores dos registradores após cada instrução
     estado_registradores();
 }
 
@@ -72,12 +74,12 @@ int main() {
     printf("  LOAD Rdest, Addr (e.g., LOAD R1, 10)\n");
     printf("Digite 'SAIR' para sair.\n\n");
 
-    // Inicializa��o dos registradores
+    // Inicialização dos registradores
     R[0] = 0;
     R[1] = 10;
     R[2] = 20;
     R[3] = 30;
-    // Inicializa��o da mem�ria
+    // Inicialização da memória
     for (int i = 0; i < 256; i++) {
         memoria[i] = i * 10;
     }
